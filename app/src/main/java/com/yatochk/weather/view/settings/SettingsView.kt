@@ -1,0 +1,7 @@
+package com.yatochk.weather.view.settings
+
+import com.yatochk.weather.view.View
+
+interface SettingsView : View {
+
+}
