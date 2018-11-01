@@ -15,6 +15,10 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             tools:ignore="GoogleAppIndexingWarning">
+        <provider
+                android:name=".model.database.CitiesWeatherProvider"
+                android:authorities="com.yatochk.weather.provider"
+                android:exported="false"/>
         <activity android:name=".view.cities.CitiesWeatherActivity"/>
         <activity
                 android:name=".view.SplashActivity"
