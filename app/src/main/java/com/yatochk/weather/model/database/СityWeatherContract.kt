@@ -14,9 +14,11 @@ object CityWeatherEntry {
     const val CITY = "city"
     const val TEMPERATURE = "temp"
 
-    val CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, PATH_CITIES_WEATHER)
+    val CONTENT_URI: Uri = Uri.withAppendedPath(BASE_CONTENT_URI, PATH_CITIES_WEATHER)
     const val CONTENT_LIST_TYPE =
         ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_CITIES_WEATHER
     const val CONTENT_ITEM_TYPE =
         ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_CITIES_WEATHER
 }
+
+data class CityWeather(val id: String, val city: String, val temperature: String)

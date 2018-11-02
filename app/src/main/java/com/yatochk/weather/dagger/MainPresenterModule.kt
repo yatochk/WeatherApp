@@ -8,5 +8,6 @@ import dagger.Provides
 @Module
 class MainPresenterModule {
     @Provides
-    fun provideMainPresenter(model: Model): MainPresenter = MainPresenter(model)
+    fun provideMainPresenter(model: Model): MainPresenter =
+        MainPresenter(model)
 }
