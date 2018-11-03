@@ -1,35 +1,22 @@
 package com.yatochk.weather.presenter
 
-import android.content.ContentResolver
-import android.support.annotation.NonNull
 import com.yatochk.weather.model.Model
 import com.yatochk.weather.model.database.CityWeather
 import com.yatochk.weather.view.cities.CitiesView
 
 class MainPresenter(val model: Model) {
-    private var view: CitiesView? = null
-    private val citiesWeather = ArrayList<CityWeather>()
+    private var citiesView: CitiesView? = null
 
-    fun attachView(@NonNull view: CitiesView) {
-        this.view = view
-        model.attachResolver(view.context.contentResolver)
-
-        if (citiesWeather.size == 0) {
-            model.getCitiesWeather { citiesWeather ->
-                this.view!!.updateCitiesRecycler(citiesWeather)
-            }
+    fun attachView(view: CitiesView) {
+        citiesView = view
+        model.attachResolver(citiesView!!.context.contentResolver)
+        model.getCitiesWeather {
+            citiesView!!.updateCitiesRecycler(it)
         }
     }
 
     fun detachView() {
-        view = null
-    }
-
-    fun startApp(contentResolver: ContentResolver) {
-        model.attachResolver(contentResolver)
-        model.getCitiesWeather { citiesWeather ->
-            this.citiesWeather.addAll(citiesWeather)
-        }
+        citiesView = null
     }
 
     fun clickSearchCity() {
@@ -37,6 +24,10 @@ class MainPresenter(val model: Model) {
     }
 
     fun clickAddCity() {
+
+    }
+
+    fun clickAddCity(city: CityWeather) {
 
     }
 

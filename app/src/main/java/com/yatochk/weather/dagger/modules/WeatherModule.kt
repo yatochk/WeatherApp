@@ -1,4 +1,4 @@
-package com.yatochk.weather.dagger
+package com.yatochk.weather.dagger.modules
 
 import com.yatochk.weather.model.onlineweather.OnlineWeather
 import dagger.Module

@@ -1,4 +1,4 @@
-package com.yatochk.weather.dagger
+package com.yatochk.weather.dagger.modules
 
 import com.yatochk.weather.model.Model
 import com.yatochk.weather.presenter.MainPresenter
@@ -8,6 +8,5 @@ import dagger.Provides
 @Module
 class MainPresenterModule {
     @Provides
-    fun provideMainPresenter(model: Model): MainPresenter =
-        MainPresenter(model)
+    fun provideMainPresenter(model: Model): MainPresenter = MainPresenter(model)
 }

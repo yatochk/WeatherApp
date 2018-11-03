@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AppCompatActivity
-import com.yatochk.weather.dagger.App
 import com.yatochk.weather.view.cities.CitiesWeatherActivity
 
 const val DELAYED: Long = 2000
@@ -20,11 +19,8 @@ class SplashActivity : AppCompatActivity(), View {
         handler.postDelayed(
             {
                 startActivity(intent)
-                finish()
             },
             DELAYED
         )
-
-        App.component.getMainPresenter().startApp(contentResolver)
     }
 }

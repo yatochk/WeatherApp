@@ -3,6 +3,7 @@ package com.yatochk.weather.view.cities
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DefaultItemAnimator
+import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import com.yatochk.weather.R
 import com.yatochk.weather.dagger.App
@@ -21,7 +22,6 @@ class CitiesWeatherActivity : AppCompatActivity(), CitiesView {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         presenter = App.component.getMainPresenter()
-
         recyclerAdapter = CitiesRecyclerViewAdapter(cities)
         recyclerAdapter.setOnItemClickListener {
 
@@ -29,6 +29,7 @@ class CitiesWeatherActivity : AppCompatActivity(), CitiesView {
         val layoutManager = LinearLayoutManager(this)
         with(cities_recycler) {
             itemAnimator = DefaultItemAnimator()
+            addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
             adapter = recyclerAdapter
             this.layoutManager = layoutManager
         }
