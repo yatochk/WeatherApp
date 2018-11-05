@@ -77,6 +77,29 @@ class AddCityWeatherTask(private val contentResolver: ContentResolver, val value
     }
 }
 
+class UpdateCityWeatherTask(
+    private val contentResolver: ContentResolver,
+    private val rowId: String,
+    private val values: ContentValues
+) :
+    AsyncTask<Unit, Unit, Int>() {
+    private var onUpdateCityWeatherListener: ((String) -> Unit)? = null
+    fun setOnDeleteCityWeatherListener(listener: (String) -> Unit) {
+        onUpdateCityWeatherListener = listener
+    }
+
+    override fun doInBackground(vararg params: Unit?): Int {
+        return contentResolver.update(CityWeatherEntry.CONTENT_URI, values, CityWeatherEntry.ID, arrayOf(rowId))
+    }
+
+    override fun onPostExecute(result: Int?) {
+        super.onPostExecute(result)
+
+        if (result != null)
+            onUpdateCityWeatherListener?.invoke(result.toString())
+    }
+}
+
 class DeleteCityWeatherTask(private val contentResolver: ContentResolver, private val rowId: String) :
     AsyncTask<Unit, Unit, Int>() {
     private var onDeleteCityWeatherListener: ((String) -> Unit)? = null

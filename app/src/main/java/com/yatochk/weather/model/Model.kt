@@ -49,6 +49,18 @@ class Model(private val onlineWeather: OnlineWeather) : ModelContract {
             throw IllegalArgumentException("Context not attached")
     }
 
+    override fun updateCitiesWeather(rowId: String, cityWeather: CityWeather, listener: (String) -> Unit) {
+        if (context != null) {
+            val values = ContentValues().apply {
+                put(CityWeatherEntry.CITY, cityWeather.city)
+                put(CityWeatherEntry.TEMPERATURE, cityWeather.temperature)
+            }
+            val updateCityWeatherTask = UpdateCityWeatherTask(contentResolver!!, rowId, values)
+            updateCityWeatherTask.setOnDeleteCityWeatherListener(listener)
+        } else
+            throw IllegalArgumentException("Context not attached")
+    }
+
     override fun deleteCitiesWeather(rowId: String, listener: (String) -> Unit) {
         if (context != null) {
             val deleteTask = DeleteCityWeatherTask(contentResolver!!, rowId)
