@@ -12,7 +12,7 @@ import com.yatochk.weather.presenter.MainPresenter
 import kotlinx.android.synthetic.main.activity_main.*
 
 class CitiesWeatherActivity : AppCompatActivity(), CitiesView {
-    override val context = this
+    override val activity = this
     lateinit var presenter: MainPresenter
 
     private lateinit var recyclerAdapter: CitiesRecyclerViewAdapter
@@ -33,6 +33,10 @@ class CitiesWeatherActivity : AppCompatActivity(), CitiesView {
             adapter = recyclerAdapter
             this.layoutManager = layoutManager
         }
+
+        add_city_button.setOnClickListener {
+            presenter.clickAddCity()
+        }
     }
 
     override fun onResume() {
@@ -46,6 +50,7 @@ class CitiesWeatherActivity : AppCompatActivity(), CitiesView {
     }
 
     override fun updateCitiesRecycler(cities: ArrayList<CityWeather>) {
+        this.cities.clear()
         for (city in cities)
             this.cities.add(city)
 

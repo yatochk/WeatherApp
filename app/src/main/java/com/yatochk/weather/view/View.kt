@@ -1,7 +1,7 @@
 package com.yatochk.weather.view
 
-import android.content.Context
+import android.app.Activity
 
 interface View {
-    val context: Context
+    val activity: Activity
 }

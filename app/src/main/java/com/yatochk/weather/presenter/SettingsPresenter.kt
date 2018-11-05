@@ -8,7 +8,6 @@ class SettingsPresenter(val model: Model) {
 
     fun attachView(view: SettingsView) {
         this.view = view
-        model.attachResolver(view.context.contentResolver)
     }
 
     fun detachView() {

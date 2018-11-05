@@ -1,7 +1,7 @@
 package com.yatochk.weather.presenter
 
 import com.yatochk.weather.model.Model
-import com.yatochk.weather.model.database.CityWeather
+import com.yatochk.weather.view.cities.AddCityDialog
 import com.yatochk.weather.view.cities.CitiesView
 
 class MainPresenter(val model: Model) {
@@ -9,14 +9,18 @@ class MainPresenter(val model: Model) {
 
     fun attachView(view: CitiesView) {
         citiesView = view
-        model.attachResolver(citiesView!!.context.contentResolver)
-        model.getCitiesWeather {
-            citiesView!!.updateCitiesRecycler(it)
+        model.attachContext(citiesView!!.activity)
+        model.getCitiesWeather { citiesWeather ->
+            if (citiesWeather.size > 0)
+                citiesView!!.updateCitiesRecycler(citiesWeather)
+            else
+                AddCityDialog()
         }
     }
 
     fun detachView() {
         citiesView = null
+        model.detachContext()
     }
 
     fun clickSearchCity() {
@@ -24,11 +28,16 @@ class MainPresenter(val model: Model) {
     }
 
     fun clickAddCity() {
-
-    }
-
-    fun clickAddCity(city: CityWeather) {
-
+        if (citiesView != null) {
+            val addCityDialog = AddCityDialog()
+            addCityDialog.show(citiesView!!.activity.fragmentManager, "Add")
+            addCityDialog.setOnCancelListener {
+                model.getCitiesWeather { citiesWeather ->
+                    if (citiesWeather.size > 0)
+                        citiesView!!.updateCitiesRecycler(citiesWeather)
+                }
+            }
+        }
     }
 
     fun clickDeleteCity(deleteCityId: String) {
