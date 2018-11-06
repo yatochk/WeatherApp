@@ -9,7 +9,7 @@ class MainPresenter(val model: Model) {
 
     fun attachView(view: CitiesView) {
         citiesView = view
-        model.attachContext(citiesView!!.activity)
+        model.attachContentResolver(citiesView!!.activity.contentResolver)
         model.getCitiesWeather { citiesWeather ->
             if (citiesWeather.size > 0)
                 citiesView!!.updateCitiesRecycler(citiesWeather)
@@ -20,11 +20,7 @@ class MainPresenter(val model: Model) {
 
     fun detachView() {
         citiesView = null
-        model.detachContext()
-    }
-
-    fun clickSearchCity() {
-
+        model.detachContentResolver()
     }
 
     fun clickAddCity() {

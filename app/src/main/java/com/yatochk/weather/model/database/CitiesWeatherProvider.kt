@@ -11,7 +11,8 @@ private const val SQL_CREATE_ENTRIES =
     "CREATE TABLE ${CityWeatherEntry.TABLE_NAME} (" +
             "${CityWeatherEntry.ID} INTEGER PRIMARY KEY," +
             "${CityWeatherEntry.CITY} TEXT," +
-            "${CityWeatherEntry.TEMPERATURE} TEXT)"
+            "${CityWeatherEntry.TEMPERATURE} TEXT," +
+            "${CityWeatherEntry.FILE_NAME} TEXT)"
 
 private const val SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS ${CityWeatherEntry.TABLE_NAME}"
 
@@ -163,7 +164,7 @@ class WeatherDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
     }
 
     companion object {
-        const val DATABASE_VERSION = 1
+        const val DATABASE_VERSION = 2
         const val DATABASE_NAME = "citiesWeather.db"
     }
 }

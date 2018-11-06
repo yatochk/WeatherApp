@@ -15,7 +15,12 @@ class GetCitiesWeatherTask(private val contentResolver: ContentResolver) :
     override fun doInBackground(vararg params: Unit?): ArrayList<CityWeather> {
         val citiesWeather = ArrayList<CityWeather>()
 
-        val projection = arrayOf(CityWeatherEntry.ID, CityWeatherEntry.CITY, CityWeatherEntry.TEMPERATURE)
+        val projection = arrayOf(
+            CityWeatherEntry.ID,
+            CityWeatherEntry.CITY,
+            CityWeatherEntry.TEMPERATURE,
+            CityWeatherEntry.FILE_NAME
+        )
         val cursor: Cursor?
         cursor = contentResolver.query(
             CityWeatherEntry.CONTENT_URI,
@@ -30,12 +35,14 @@ class GetCitiesWeatherTask(private val contentResolver: ContentResolver) :
                 val rowId = getString(getColumnIndexOrThrow(CityWeatherEntry.ID))
                 val cityName = getString(getColumnIndexOrThrow(CityWeatherEntry.CITY))
                 val cityTemp = getString(getColumnIndexOrThrow(CityWeatherEntry.TEMPERATURE))
+                val weatherFileName = getString(getColumnIndex(CityWeatherEntry.FILE_NAME))
 
                 citiesWeather.add(
                     CityWeather(
                         rowId,
                         cityName,
-                        cityTemp
+                        cityTemp,
+                        weatherFileName
                     )
                 )
             }
@@ -65,7 +72,8 @@ class AddCityWeatherTask(private val contentResolver: ContentResolver, val value
         return CityWeather(
             rowId.toString().substring(rowId.toString().lastIndexOf('/') + 1, rowId.toString().length),
             values.getAsString(CityWeatherEntry.CITY),
-            values.getAsString(CityWeatherEntry.TEMPERATURE)
+            values.getAsString(CityWeatherEntry.TEMPERATURE),
+            values.getAsString(CityWeatherEntry.FILE_NAME)
         )
     }
 

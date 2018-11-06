@@ -7,7 +7,7 @@ class DialogPresenter(val model: Model) {
     private var dialog: AddCityDialog? = null
     fun attachDialog(dialog: AddCityDialog) {
         this.dialog = dialog
-        model.attachContext(dialog.activity)
+        model.attachContentResolver(dialog.activity.contentResolver)
         model.getCity(dialog.activity) { cityName ->
             dialog.setCity(cityName)
         }
@@ -15,12 +15,12 @@ class DialogPresenter(val model: Model) {
 
     fun detachDialog() {
         dialog = null
-        model.detachContext()
+        model.detachContentResolver()
     }
 
     fun setClick(cityName: String) {
         model.addCitiesWeather(cityName, null)
-        dialog?.closeDialog()
+        closeClick()
     }
 
     fun closeClick() {

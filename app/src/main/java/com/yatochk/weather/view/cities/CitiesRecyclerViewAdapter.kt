@@ -9,13 +9,13 @@ import com.yatochk.weather.model.database.CityWeather
 import kotlinx.android.synthetic.main.city_item.view.*
 
 class CitiesRecyclerViewAdapter(private val cities: ArrayList<CityWeather>) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    RecyclerView.Adapter<CitiesRecyclerViewAdapter.CityViewHolder>() {
     private var onItemClickListener: ((CityWeather) -> Unit)? = null
     fun setOnItemClickListener(onClick: ((translates: CityWeather) -> Unit)) {
         onItemClickListener = onClick
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CitiesRecyclerViewAdapter.CityViewHolder =
         CityViewHolder(
             LayoutInflater.from(parent.context).inflate(
                 R.layout.city_item,
@@ -26,14 +26,14 @@ class CitiesRecyclerViewAdapter(private val cities: ArrayList<CityWeather>) :
 
     override fun getItemCount(): Int = cities.size
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val mHolder = holder as CityViewHolder
-        val itemView = mHolder.itemView
+    override fun onBindViewHolder(holder: CityViewHolder, position: Int) {
+        val itemView = holder.itemView
 
         val city = CityWeather(
             cities[position].id,
             cities[position].city,
-            cities[position].temperature
+            cities[position].temperature,
+            cities[position].weatherJsonName
         )
 
         with(itemView) {
