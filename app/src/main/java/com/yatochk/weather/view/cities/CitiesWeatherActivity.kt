@@ -1,5 +1,6 @@
 package com.yatochk.weather.view.cities
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DefaultItemAnimator
@@ -9,10 +10,10 @@ import com.yatochk.weather.R
 import com.yatochk.weather.dagger.App
 import com.yatochk.weather.model.database.CityWeather
 import com.yatochk.weather.presenter.MainPresenter
+import com.yatochk.weather.view.detailedweather.DetailedWeatherActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
 class CitiesWeatherActivity : AppCompatActivity(), CitiesView {
-    override val activity = this
     lateinit var presenter: MainPresenter
 
     private lateinit var recyclerAdapter: CitiesRecyclerViewAdapter
@@ -24,7 +25,7 @@ class CitiesWeatherActivity : AppCompatActivity(), CitiesView {
         presenter = App.component.getMainPresenter()
         recyclerAdapter = CitiesRecyclerViewAdapter(cities)
         recyclerAdapter.setOnItemClickListener {
-
+            presenter.clickCity()
         }
         val layoutManager = LinearLayoutManager(this)
         with(cities_recycler) {
@@ -36,6 +37,14 @@ class CitiesWeatherActivity : AppCompatActivity(), CitiesView {
 
         add_city_button.setOnClickListener {
             presenter.clickAddCity()
+        }
+    }
+
+    override fun openLocationDialog() {
+        val dialog = AddCityDialog()
+        dialog.show(fragmentManager, "AddCity")
+        dialog.setOnCancelListener {
+            presenter.closeDialog()
         }
     }
 
@@ -55,5 +64,10 @@ class CitiesWeatherActivity : AppCompatActivity(), CitiesView {
             this.cities.add(city)
 
         recyclerAdapter.notifyDataSetChanged()
+    }
+
+    override fun openWeatherActivity() {
+        val intent = Intent(this, DetailedWeatherActivity::class.java)
+        startActivity(intent)
     }
 }

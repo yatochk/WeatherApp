@@ -11,7 +11,7 @@ import java.net.URL
 const val CONNECTION_ERROR = 101
 const val API_KEY = "825e609fb616ab086a97989cb0dc581b"
 
-class OnlineWeather {
+object OnlineWeather {
     fun getCityWeather(cityName: String, listener: (temp: String, fileName: String) -> Unit) {
         val url = "http://api.openweathermap.org/data/2.5/weather?q=$cityName&appid=$API_KEY"
         WeatherTask(url) {
@@ -40,7 +40,7 @@ class OnlineWeather {
                 result = reader.readLine()
 
             } catch (e: Exception) {
-                Log.d("ERRORINET", "ERROR")
+                Log.i("ERRORINET", "ERROR")
                 result = "{ \"cod\": $CONNECTION_ERROR}"
             }
 

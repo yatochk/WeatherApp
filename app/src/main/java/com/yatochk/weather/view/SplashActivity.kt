@@ -9,8 +9,6 @@ import com.yatochk.weather.view.cities.CitiesWeatherActivity
 const val DELAYED: Long = 2000
 
 class SplashActivity : AppCompatActivity(), View {
-    override val activity = this
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val handler = Handler()

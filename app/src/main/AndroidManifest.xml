@@ -29,12 +29,8 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".view.detailedweather.DetailedWeatherActivity">
-        </activity>
-        <activity
-                android:name=".view.settings.SettingsActivity"
-                android:label="@string/title_activity_settings">
-        </activity>
+        <activity android:name=".view.detailedweather.DetailedWeatherActivity"/>
+        <activity android:name=".view.settings.SettingsActivity"/>
     </application>
 
 </manifest>

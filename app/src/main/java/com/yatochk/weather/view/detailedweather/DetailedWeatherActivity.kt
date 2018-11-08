@@ -7,7 +7,6 @@ import com.yatochk.weather.dagger.App
 
 class DetailedWeatherActivity : AppCompatActivity(), DetailedWeatherView {
     val presenter = App.component.getMainPresenter()
-    override val activity = this
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

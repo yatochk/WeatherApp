@@ -1,7 +1,6 @@
 package com.yatochk.weather.presenter
 
 import com.yatochk.weather.model.Model
-import com.yatochk.weather.view.cities.AddCityDialog
 import com.yatochk.weather.view.cities.CitiesView
 
 class MainPresenter(val model: Model) {
@@ -9,30 +8,25 @@ class MainPresenter(val model: Model) {
 
     fun attachView(view: CitiesView) {
         citiesView = view
-        model.attachContentResolver(citiesView!!.activity.contentResolver)
         model.getCitiesWeather { citiesWeather ->
             if (citiesWeather.size > 0)
-                citiesView!!.updateCitiesRecycler(citiesWeather)
+                citiesView?.updateCitiesRecycler(citiesWeather)
             else
-                AddCityDialog()
+                citiesView?.openLocationDialog()
         }
     }
 
     fun detachView() {
         citiesView = null
-        model.detachContentResolver()
     }
 
     fun clickAddCity() {
-        if (citiesView != null) {
-            val addCityDialog = AddCityDialog()
-            addCityDialog.show(citiesView!!.activity.fragmentManager, "Add")
-            addCityDialog.setOnCancelListener {
-                model.getCitiesWeather { citiesWeather ->
-                    if (citiesWeather.size > 0)
-                        citiesView!!.updateCitiesRecycler(citiesWeather)
-                }
-            }
+        citiesView?.openLocationDialog()
+    }
+
+    fun closeDialog() {
+        model.getCitiesWeather { citiesWeather ->
+            citiesView?.updateCitiesRecycler(citiesWeather)
         }
     }
 
@@ -41,6 +35,6 @@ class MainPresenter(val model: Model) {
     }
 
     fun clickCity() {
-
+        citiesView?.openWeatherActivity()
     }
 }

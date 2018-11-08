@@ -3,20 +3,24 @@ package com.yatochk.weather.model
 import android.app.Activity
 import android.content.ContentResolver
 import android.content.ContentValues
-import android.content.Context
+import android.util.Log
 import com.yatochk.weather.model.database.*
 import com.yatochk.weather.model.location.LocationTask
 import com.yatochk.weather.model.onlineweather.OnlineWeather
 
-class Model(private val onlineWeather: OnlineWeather) : ModelContract {
-    private var contentResolver: ContentResolver? = null
-    private var context: Context? = null
+class Model : ModelContract {
+    companion object {
+        private var contentResolver: ContentResolver? = null
+    }
+
     override fun attachContentResolver(contentResolver: ContentResolver) {
-        this.contentResolver = contentResolver
+        Model.contentResolver = contentResolver
+        Log.i("ModelInfo", "ContentResolver attached")
     }
 
     override fun detachContentResolver() {
-        context = null
+        contentResolver = null
+        Log.i("ModelInfo", "ContentResolver detached")
     }
 
     override fun getCitiesWeather(listener: (ArrayList<CityWeather>) -> Unit) {
@@ -31,7 +35,7 @@ class Model(private val onlineWeather: OnlineWeather) : ModelContract {
         if (contentResolver == null)
             throw IllegalArgumentException("ContentResolve not attached")
 
-        onlineWeather.getCityWeather(city) { temp, fileName ->
+        OnlineWeather.getCityWeather(city) { temp, fileName ->
             val values = ContentValues().apply {
                 put(CityWeatherEntry.CITY, city)
                 put(CityWeatherEntry.TEMPERATURE, temp)
