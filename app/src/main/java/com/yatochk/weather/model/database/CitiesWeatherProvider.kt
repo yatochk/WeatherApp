@@ -142,14 +142,14 @@ class CitiesWeatherProvider : ContentProvider() {
         selectionArgs: Array<out String>
     ): Int {
         if (values.containsKey(CityWeatherEntry.CITY))
-            values.getAsString(CityWeatherEntry.CITY) ?: throw IllegalArgumentException("Guest requires a name")
+            values.getAsString(CityWeatherEntry.CITY) ?: throw IllegalArgumentException("City requires a name")
 
         if (values.size() == 0) {
             return 0
         }
 
         val database = dbHelper.writableDatabase
-        return database.update(CityWeatherEntry.TABLE_NAME, values, selection, selectionArgs)
+        return database.update(CityWeatherEntry.TABLE_NAME, values, "$selection=?", selectionArgs)
     }
 }
 

@@ -26,12 +26,35 @@ class Model : ModelContract {
     override fun getCitiesWeather(listener: (ArrayList<CityWeather>) -> Unit) {
         if (contentResolver == null)
             throw IllegalArgumentException("ContentResolve not attached")
+
         val getTask = GetCitiesWeatherTask(contentResolver!!)
         getTask.setOnGetCitiesWeatherListener(listener)
-        getTask.execute()
+        getTask.start()
     }
 
-    override fun addCitiesWeather(city: String, listener: ((CityWeather) -> Unit)?) {
+    override fun getUpdatedCitiesWeather(cities: ArrayList<CityWeather>, listener: (ArrayList<CityWeather>) -> Unit) {
+        if (contentResolver == null)
+            throw IllegalArgumentException("ContentResolve not attached")
+
+        for (city in cities) {
+            OnlineWeather.getCityWeather(city.city) { temp, fileName ->
+                val values = ContentValues().apply {
+                    put(CityWeatherEntry.CITY, city.city)
+                    put(CityWeatherEntry.TEMPERATURE, temp)
+                    put(CityWeatherEntry.FILE_NAME, fileName)
+                }
+
+                val updateTask = UpdateCityWeatherTask(contentResolver!!, city.id, values)
+                if (city == cities[cities.size - 1])
+                    updateTask.setOnUpdateCityWeatherListener {
+                        getCitiesWeather(listener)
+                    }
+                updateTask.start()
+            }
+        }
+    }
+
+    override fun addCityWeather(city: String, listener: ((CityWeather) -> Unit)?) {
         if (contentResolver == null)
             throw IllegalArgumentException("ContentResolve not attached")
 
@@ -45,7 +68,7 @@ class Model : ModelContract {
             val addTask = AddCityWeatherTask(contentResolver!!, values)
             if (listener != null)
                 addTask.setOnAddCityWeatherListener(listener)
-            addTask.execute()
+            addTask.start()
         }
     }
 
@@ -58,7 +81,7 @@ class Model : ModelContract {
             put(CityWeatherEntry.TEMPERATURE, cityWeather.temperature)
         }
         val updateCityWeatherTask = UpdateCityWeatherTask(contentResolver!!, rowId, values)
-        updateCityWeatherTask.setOnDeleteCityWeatherListener(listener)
+        updateCityWeatherTask.setOnUpdateCityWeatherListener(listener)
     }
 
     override fun deleteCitiesWeather(rowId: String, listener: (String) -> Unit) {

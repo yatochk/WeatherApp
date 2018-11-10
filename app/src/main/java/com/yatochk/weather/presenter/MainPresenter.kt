@@ -1,6 +1,7 @@
 package com.yatochk.weather.presenter
 
 import com.yatochk.weather.model.Model
+import com.yatochk.weather.model.database.CityWeather
 import com.yatochk.weather.view.cities.CitiesView
 
 class MainPresenter(val model: Model) {
@@ -8,9 +9,9 @@ class MainPresenter(val model: Model) {
 
     fun attachView(view: CitiesView) {
         citiesView = view
-        model.getCitiesWeather { citiesWeather ->
-            if (citiesWeather.size > 0)
-                citiesView?.updateCitiesRecycler(citiesWeather)
+        model.getCitiesWeather {
+            if (it.size > 0)
+                citiesView?.updateCitiesRecycler(it)
             else
                 citiesView?.openLocationDialog()
         }
@@ -25,8 +26,15 @@ class MainPresenter(val model: Model) {
     }
 
     fun closeDialog() {
-        model.getCitiesWeather { citiesWeather ->
-            citiesView?.updateCitiesRecycler(citiesWeather)
+        model.getCitiesWeather {
+            citiesView?.updateCitiesRecycler(it)
+        }
+    }
+
+    fun updateWeatherSwipe(cities: ArrayList<CityWeather>) {
+        model.getUpdatedCitiesWeather(cities) {
+            citiesView?.updateCitiesRecycler(it)
+            citiesView?.stopUpateAnim()
         }
     }
 

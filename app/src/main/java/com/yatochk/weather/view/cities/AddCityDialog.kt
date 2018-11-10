@@ -11,7 +11,7 @@ import com.yatochk.weather.dagger.App
 import com.yatochk.weather.presenter.DialogPresenter
 import kotlinx.android.synthetic.main.add_city.view.*
 
-class AddCityDialog : DialogFragment() {
+class AddCityDialog : DialogFragment(), AddCityView {
     private lateinit var presenter: DialogPresenter
     private lateinit var dialogView: View
     private var cityName: String? = null
@@ -21,7 +21,7 @@ class AddCityDialog : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val builder = AlertDialog.Builder(this.activity)
+        val builder = AlertDialog.Builder(activity)
         dialogView = activity.layoutInflater.inflate(R.layout.add_city, null)
         presenter = App.component.getDialogPresenter()
         presenter.attachDialog(this)
@@ -37,13 +37,13 @@ class AddCityDialog : DialogFragment() {
         return builder.create()
     }
 
-    fun setCity(cityName: String) {
+    override fun setCity(cityName: String) {
         this.cityName = cityName
         dialogView.add_city_name.text = cityName
     }
 
-    fun closeDialog() {
-        dialog.cancel()
+    override fun closeDialog() {
+        dialog?.cancel()
     }
 
     override fun onCancel(dialog: DialogInterface?) {

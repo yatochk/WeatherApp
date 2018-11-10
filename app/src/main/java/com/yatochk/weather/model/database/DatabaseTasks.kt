@@ -4,84 +4,92 @@ import android.content.ContentResolver
 import android.content.ContentValues
 import android.database.Cursor
 import android.os.AsyncTask
+import android.os.Handler
 
-class GetCitiesWeatherTask(private val contentResolver: ContentResolver) :
-    AsyncTask<Unit, Unit, ArrayList<CityWeather>>() {
+class GetCitiesWeatherTask(private val contentResolver: ContentResolver) {
     private var onGetCitiesWeatherListener: ((ArrayList<CityWeather>) -> Unit)? = null
     fun setOnGetCitiesWeatherListener(listener: (ArrayList<CityWeather>) -> Unit) {
         onGetCitiesWeatherListener = listener
     }
 
-    override fun doInBackground(vararg params: Unit?): ArrayList<CityWeather> {
+    private val thread: Thread
+
+    init {
+        val handler = Handler()
         val citiesWeather = ArrayList<CityWeather>()
 
-        val projection = arrayOf(
-            CityWeatherEntry.ID,
-            CityWeatherEntry.CITY,
-            CityWeatherEntry.TEMPERATURE,
-            CityWeatherEntry.FILE_NAME
-        )
-        val cursor: Cursor?
-        cursor = contentResolver.query(
-            CityWeatherEntry.CONTENT_URI,
-            projection,
-            null,
-            null,
-            null
-        )
+        thread = Thread {
+            val projection = arrayOf(
+                CityWeatherEntry.ID,
+                CityWeatherEntry.CITY,
+                CityWeatherEntry.TEMPERATURE,
+                CityWeatherEntry.FILE_NAME
+            )
+            val cursor: Cursor?
+            cursor = contentResolver.query(
+                CityWeatherEntry.CONTENT_URI,
+                projection,
+                null,
+                null,
+                null
+            )
 
-        with(cursor) {
-            while (moveToNext()) {
-                val rowId = getString(getColumnIndexOrThrow(CityWeatherEntry.ID))
-                val cityName = getString(getColumnIndexOrThrow(CityWeatherEntry.CITY))
-                val cityTemp = getString(getColumnIndexOrThrow(CityWeatherEntry.TEMPERATURE))
-                val weatherFileName = getString(getColumnIndex(CityWeatherEntry.FILE_NAME))
+            with(cursor) {
+                while (moveToNext()) {
+                    val rowId = getString(getColumnIndexOrThrow(CityWeatherEntry.ID))
+                    val cityName = getString(getColumnIndexOrThrow(CityWeatherEntry.CITY))
+                    val cityTemp = getString(getColumnIndexOrThrow(CityWeatherEntry.TEMPERATURE))
+                    val weatherFileName = getString(getColumnIndex(CityWeatherEntry.FILE_NAME))
 
-                citiesWeather.add(
-                    CityWeather(
-                        rowId,
-                        cityName,
-                        cityTemp,
-                        weatherFileName
+                    citiesWeather.add(
+                        CityWeather(
+                            rowId,
+                            cityName,
+                            cityTemp,
+                            weatherFileName
+                        )
                     )
-                )
+                }
+            }
+
+            handler.post {
+                onGetCitiesWeatherListener?.invoke(citiesWeather)
             }
         }
-
-        return citiesWeather
     }
 
-    override fun onPostExecute(result: ArrayList<CityWeather>?) {
-        super.onPostExecute(result)
-
-        if (result != null)
-            onGetCitiesWeatherListener?.invoke(result)
+    fun start() {
+        thread.start()
     }
 }
 
-class AddCityWeatherTask(private val contentResolver: ContentResolver, val values: ContentValues) :
-    AsyncTask<Unit, Unit, CityWeather>() {
+class AddCityWeatherTask(contentResolver: ContentResolver, val values: ContentValues) {
     private var onAddCityWeatherListener: ((CityWeather) -> Unit)? = null
     fun setOnAddCityWeatherListener(listener: (CityWeather) -> Unit) {
         onAddCityWeatherListener = listener
     }
 
-    override fun doInBackground(vararg params: Unit?): CityWeather {
-        val rowId = contentResolver.insert(CityWeatherEntry.CONTENT_URI, values)
+    private val thread: Thread
 
-        return CityWeather(
-            rowId.toString().substring(rowId.toString().lastIndexOf('/') + 1, rowId.toString().length),
-            values.getAsString(CityWeatherEntry.CITY),
-            values.getAsString(CityWeatherEntry.TEMPERATURE),
-            values.getAsString(CityWeatherEntry.FILE_NAME)
-        )
+    init {
+        val rowId = contentResolver.insert(CityWeatherEntry.CONTENT_URI, values)
+        val handler = Handler()
+        thread = Thread {
+            val weather = CityWeather(
+                rowId.toString().substring(rowId.toString().lastIndexOf('/') + 1, rowId.toString().length),
+                values.getAsString(CityWeatherEntry.CITY),
+                values.getAsString(CityWeatherEntry.TEMPERATURE),
+                values.getAsString(CityWeatherEntry.FILE_NAME)
+            )
+
+            handler.post {
+                onAddCityWeatherListener?.invoke(weather)
+            }
+        }
     }
 
-    override fun onPostExecute(result: CityWeather?) {
-        super.onPostExecute(result)
-
-        if (result != null)
-            onAddCityWeatherListener?.invoke(result)
+    fun start() {
+        thread.start()
     }
 }
 
@@ -89,22 +97,32 @@ class UpdateCityWeatherTask(
     private val contentResolver: ContentResolver,
     private val rowId: String,
     private val values: ContentValues
-) :
-    AsyncTask<Unit, Unit, Int>() {
+) {
     private var onUpdateCityWeatherListener: ((String) -> Unit)? = null
-    fun setOnDeleteCityWeatherListener(listener: (String) -> Unit) {
+    fun setOnUpdateCityWeatherListener(listener: (String) -> Unit) {
         onUpdateCityWeatherListener = listener
     }
 
-    override fun doInBackground(vararg params: Unit?): Int {
-        return contentResolver.update(CityWeatherEntry.CONTENT_URI, values, CityWeatherEntry.ID, arrayOf(rowId))
+    private val thread: Thread
+
+    init {
+        val handler = Handler()
+        thread = Thread {
+            val row = contentResolver.update(
+                CityWeatherEntry.CONTENT_URI,
+                values,
+                CityWeatherEntry.ID,
+                arrayOf(rowId)
+            )
+
+            handler.post {
+                onUpdateCityWeatherListener?.invoke(row.toString())
+            }
+        }
     }
 
-    override fun onPostExecute(result: Int?) {
-        super.onPostExecute(result)
-
-        if (result != null)
-            onUpdateCityWeatherListener?.invoke(result.toString())
+    fun start() {
+        thread.start()
     }
 }
 

@@ -23,6 +23,7 @@ class CitiesWeatherActivity : AppCompatActivity(), CitiesView {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         presenter = App.component.getMainPresenter()
+
         recyclerAdapter = CitiesRecyclerViewAdapter(cities)
         recyclerAdapter.setOnItemClickListener {
             presenter.clickCity()
@@ -35,9 +36,17 @@ class CitiesWeatherActivity : AppCompatActivity(), CitiesView {
             this.layoutManager = layoutManager
         }
 
+        refresh.setOnRefreshListener {
+            presenter.updateWeatherSwipe(cities)
+        }
+
         add_city_button.setOnClickListener {
             presenter.clickAddCity()
         }
+    }
+
+    override fun stopUpateAnim() {
+        refresh.isRefreshing = false
     }
 
     override fun openLocationDialog() {
