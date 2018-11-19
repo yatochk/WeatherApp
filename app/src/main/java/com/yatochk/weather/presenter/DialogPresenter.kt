@@ -1,15 +1,17 @@
 package com.yatochk.weather.presenter
 
+import android.app.Activity
 import com.yatochk.weather.model.Model
+import com.yatochk.weather.model.database.CityWeather
 import com.yatochk.weather.view.cities.AddCityDialog
-import com.yatochk.weather.view.cities.AddCityView
 
 class DialogPresenter(val model: Model) {
     private var dialog: AddCityDialog? = null
-    private var addCityView: AddCityView? = null
-    fun attachDialog(dialog: AddCityDialog) {
+    private var onAddCityListener: (() -> Unit)? = null
+    fun attachDialog(dialog: AddCityDialog, onAddCityListener: (() -> Unit)?) {
         this.dialog = dialog
-        model.getCity(dialog.activity) { cityName ->
+        this.onAddCityListener = onAddCityListener
+        model.getCity(dialog.activity as Activity) { cityName ->
             dialog.setCity(cityName)
         }
     }
@@ -19,12 +21,14 @@ class DialogPresenter(val model: Model) {
     }
 
     fun setClick(cityName: String) {
-        model.addCityWeather(cityName) {
-            dialog?.closeDialog()
-        }
-    }
+        model.addCityWeather(cityName, object : Model.OnAddTaskListener {
+            override fun onComplete(cityWeather: CityWeather) {
+                onAddCityListener?.invoke()
+            }
 
-    fun closeClick() {
-        addCityView?.closeDialog()
+            override fun onError(code: Int) {
+
+            }
+        })
     }
 }

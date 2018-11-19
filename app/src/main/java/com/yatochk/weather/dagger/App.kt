@@ -11,11 +11,11 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         component = DaggerAppComponent.create()
-        component.getModel().attachContentResolver(contentResolver)
+        component.getModel().attachContext(applicationContext)
     }
 
     override fun onTerminate() {
         super.onTerminate()
-        component.getModel().detachContentResolver()
+        component.getModel().detachContext()
     }
 }

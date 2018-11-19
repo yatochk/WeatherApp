@@ -31,6 +31,7 @@
         </activity>
         <activity android:name=".view.detailedweather.DetailedWeatherActivity"/>
         <activity android:name=".view.settings.SettingsActivity"/>
+        <service android:name=".model.UpdateService"/>
     </application>
 
 </manifest>

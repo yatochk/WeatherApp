@@ -103,8 +103,10 @@ class CitiesWeatherProvider : ContentProvider() {
         val database = dbHelper.writableDatabase
         val match = uriMatcher.match(uri)
         return when (match) {
-            CITIES ->
-                database.delete(CityWeatherEntry.TABLE_NAME, selection, selectionArgs)
+            CITIES -> {
+                val deleteSelection = "$selection=?"
+                database.delete(CityWeatherEntry.TABLE_NAME, deleteSelection, selectionArgs)
+            }
             CITY_ID -> {
                 val deleteSelection = CityWeatherEntry.ID + "=?"
                 val deleteSelectionArgs = arrayOf(ContentUris.parseId(uri).toString())

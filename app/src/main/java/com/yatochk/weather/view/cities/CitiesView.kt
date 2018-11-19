@@ -7,5 +7,6 @@ interface CitiesView : View {
     fun updateCitiesRecycler(cities: ArrayList<CityWeather>)
     fun openLocationDialog()
     fun openWeatherActivity()
-    fun stopUpateAnim()
+    fun stopUpdateAnim()
+    fun showMessage(msg: String)
 }

@@ -1,5 +1,6 @@
 package com.yatochk.weather.view.cities
 
+import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -8,9 +9,11 @@ import com.yatochk.weather.R
 import com.yatochk.weather.model.database.CityWeather
 import kotlinx.android.synthetic.main.city_item.view.*
 
+
 class CitiesRecyclerViewAdapter(private val cities: ArrayList<CityWeather>) :
     RecyclerView.Adapter<CitiesRecyclerViewAdapter.CityViewHolder>() {
     private var onItemClickListener: ((CityWeather) -> Unit)? = null
+
     fun setOnItemClickListener(onClick: ((translates: CityWeather) -> Unit)) {
         onItemClickListener = onClick
     }
@@ -47,5 +50,17 @@ class CitiesRecyclerViewAdapter(private val cities: ArrayList<CityWeather>) :
 
     }
 
-    class CityViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    fun removeItem(position: Int) {
+        cities.removeAt(position)
+        notifyItemRemoved(position)
+    }
+
+    fun restoreItem(item: CityWeather, position: Int) {
+        cities.add(position, item)
+        notifyItemInserted(position)
+    }
+
+    class CityViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val viewForeground: ConstraintLayout = itemView.item_foreground
+    }
 }
