@@ -9,7 +9,6 @@ import com.yatochk.weather.R
 import com.yatochk.weather.model.database.CityWeather
 import kotlinx.android.synthetic.main.city_item.view.*
 
-
 class CitiesRecyclerViewAdapter(private val cities: ArrayList<CityWeather>) :
     RecyclerView.Adapter<CitiesRecyclerViewAdapter.CityViewHolder>() {
     private var onItemClickListener: ((CityWeather) -> Unit)? = null

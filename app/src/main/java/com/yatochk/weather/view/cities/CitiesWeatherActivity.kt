@@ -19,7 +19,7 @@ import com.yatochk.weather.view.detailedweather.DetailedWeatherActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
 class CitiesWeatherActivity : AppCompatActivity(), CitiesView {
-    lateinit var presenter: MainPresenter
+    private lateinit var presenter: MainPresenter
 
     private lateinit var recyclerAdapter: CitiesRecyclerViewAdapter
     private val cities = ArrayList<CityWeather>()
@@ -121,6 +121,4 @@ class CitiesWeatherActivity : AppCompatActivity(), CitiesView {
         val intent = Intent(this, DetailedWeatherActivity::class.java)
         startActivity(intent)
     }
-
-
 }

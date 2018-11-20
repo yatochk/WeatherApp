@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
-import android.util.Log
 import com.yatochk.weather.model.database.*
 import com.yatochk.weather.model.location.LocationTask
 import com.yatochk.weather.model.onlineweather.OnlineWeather
@@ -12,21 +11,13 @@ import com.yatochk.weather.model.onlineweather.OnlineWeather
 const val SETTINGS_PREFERENCES = "setPref"
 const val UPDATE_DELAY_SETTINGS = "upDelPref"
 
-class Model : ModelContract {
+class Model(val context: Context) : ModelContract {
     companion object {
-        private lateinit var context: Context
         private var contentResolver: ContentResolver? = null
     }
 
-    override fun attachContext(context: Context) {
+    init {
         contentResolver = context.contentResolver
-        Model.context = context
-        Log.i("ModelInfo", "ContentResolver attached")
-    }
-
-    override fun detachContext() {
-        contentResolver = null
-        Log.i("ModelInfo", "ContentResolver detached")
     }
 
     override fun getCitiesWeather(listener: (ArrayList<CityWeather>) -> Unit) {
@@ -125,7 +116,7 @@ class Model : ModelContract {
         locationTask.setLocationListener(listener)
     }
 
-    override fun setUpdateDelay(time: Long) {
+    override fun setUpdateDelay(time: Int) {
         context.getSharedPreferences(SETTINGS_PREFERENCES, Context.MODE_PRIVATE).edit()
             .putString(UPDATE_DELAY_SETTINGS, time.toString())
             .apply()

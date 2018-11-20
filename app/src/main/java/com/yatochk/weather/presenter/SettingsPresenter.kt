@@ -11,6 +11,8 @@ class SettingsPresenter(val model: Model) {
     }
 
     fun detachView() {
+        if (view != null)
+            model.setUpdateDelay(view!!.getTimeProgress())
         view = null
     }
 }
