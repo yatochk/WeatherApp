@@ -14,14 +14,16 @@ class UpdateService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val time = intent?.getIntExtra("time", NO_TIME) ?: NO_TIME
-        timer.scheduleAtFixedRate(
-            object : TimerTask() {
-                override fun run() {
-                    App.component.getModel().updateAllWeathers()
-                }
-            },
-            0, time * MS_PER_MINUTE
-        )
+        if (time != NO_TIME) {
+            timer.scheduleAtFixedRate(
+                object : TimerTask() {
+                    override fun run() {
+                        App.component.getModel().updateAllWeathers()
+                    }
+                },
+                0, time * MS_PER_MINUTE
+            )
+        }
         return super.onStartCommand(intent, flags, startId)
     }
 

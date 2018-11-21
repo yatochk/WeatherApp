@@ -22,6 +22,8 @@ class MainPresenter(val model: ModelContract) {
             else
                 citiesView?.openLocationDialog()
         }
+
+        model.startUpdateService()
     }
 
     fun detachView() {

@@ -95,6 +95,9 @@ class Model(val context: Context) : ModelContract {
 
     override fun startUpdateService() {
         val serviceIntent = Intent(context, UpdateService::class.java)
+        val time = context.getSharedPreferences(SETTINGS_PREFERENCES, Context.MODE_PRIVATE)
+            .getString(UPDATE_DELAY_SETTINGS, NO_TIME.toString())
+        serviceIntent.putExtra("time", time)
         context.startActivity(serviceIntent)
     }
 
