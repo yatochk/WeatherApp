@@ -8,7 +8,7 @@ import android.os.Handler
 
 class GetCitiesWeatherTask(private val contentResolver: ContentResolver) {
     private var onGetCitiesWeatherListener: ((ArrayList<CityWeather>) -> Unit)? = null
-    fun setOnGetCitiesWeatherListener(listener: (ArrayList<CityWeather>) -> Unit) {
+    fun setOnGetCitiesWeatherListener(listener: ((ArrayList<CityWeather>) -> Unit)?) {
         onGetCitiesWeatherListener = listener
     }
 

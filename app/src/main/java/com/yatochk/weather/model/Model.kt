@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import com.yatochk.weather.model.database.*
 import com.yatochk.weather.model.location.LocationTask
 import com.yatochk.weather.model.onlineweather.OnlineWeather
@@ -20,19 +21,13 @@ class Model(val context: Context) : ModelContract {
         contentResolver = context.contentResolver
     }
 
-    override fun getCitiesWeather(listener: (ArrayList<CityWeather>) -> Unit) {
-        if (contentResolver == null)
-            throw IllegalArgumentException("ContentResolve not attached")
-
+    override fun getCitiesWeather(listener: ((ArrayList<CityWeather>) -> Unit)?) {
         val getTask = GetCitiesWeatherTask(contentResolver!!)
         getTask.setOnGetCitiesWeatherListener(listener)
         getTask.start()
     }
 
-    override fun getUpdatedCitiesWeather(cities: ArrayList<CityWeather>, listener: OnGetUpdatedTaskListener) {
-        if (contentResolver == null)
-            throw IllegalArgumentException("ContentResolve not attached")
-
+    override fun updateCitiesWeathers(cities: ArrayList<CityWeather>, listener: OnGetUpdatedTaskListener?) {
         for (city in cities) {
             OnlineWeather.getCityWeather(city.city, object : OnlineWeather.OnWeatherTaskListener {
                 override fun onComplete(temp: Int, json: String) {
@@ -50,14 +45,14 @@ class Model(val context: Context) : ModelContract {
                     if (city == cities[cities.size - 1])
                         updateTask.setOnUpdateCityWeatherListener {
                             getCitiesWeather { cities ->
-                                listener.onComplete(cities)
+                                listener?.onComplete(cities)
                             }
                         }
                     updateTask.start()
                 }
 
                 override fun onError(code: Int) {
-                    listener.onError(code)
+                    listener?.onError(code)
                 }
 
             })
@@ -65,9 +60,6 @@ class Model(val context: Context) : ModelContract {
     }
 
     override fun addCityWeather(city: String, listener: OnAddTaskListener) {
-        if (contentResolver == null)
-            throw IllegalArgumentException("ContentResolve not attached")
-
         OnlineWeather.getCityWeather(city, object : OnlineWeather.OnWeatherTaskListener {
             override fun onComplete(temp: Int, json: String) {
                 val values = ContentValues().apply {
@@ -89,22 +81,7 @@ class Model(val context: Context) : ModelContract {
         })
     }
 
-    override fun updateCitiesWeather(rowId: String, cityWeather: CityWeather, listener: (String) -> Unit) {
-        if (contentResolver == null)
-            throw IllegalArgumentException("ContentResolve not attached")
-
-        val values = ContentValues().apply {
-            put(CityWeatherEntry.CITY, cityWeather.city)
-            put(CityWeatherEntry.TEMPERATURE, cityWeather.temperature)
-        }
-        val updateCityWeatherTask = UpdateCityWeatherTask(contentResolver!!, rowId, values)
-        updateCityWeatherTask.setOnUpdateCityWeatherListener(listener)
-    }
-
     override fun deleteCitiesWeather(rowId: String, listener: ((String) -> Unit)?) {
-        if (contentResolver == null)
-            throw IllegalArgumentException("ContentResolve not attached")
-
         val deleteTask = DeleteCityWeatherTask(contentResolver!!, rowId)
         if (listener != null)
             deleteTask.setOnDeleteCityWeatherListener(listener)
@@ -116,10 +93,31 @@ class Model(val context: Context) : ModelContract {
         locationTask.setLocationListener(listener)
     }
 
+    override fun startUpdateService() {
+        val serviceIntent = Intent(context, UpdateService::class.java)
+        context.startActivity(serviceIntent)
+    }
+
+    private fun startUpdateService(updateTime: Int) {
+        val serviceIntent = Intent(context, UpdateService::class.java).apply {
+            putExtra("time", updateTime)
+        }
+
+        context.startService(serviceIntent)
+    }
+
     override fun setUpdateDelay(time: Int) {
         context.getSharedPreferences(SETTINGS_PREFERENCES, Context.MODE_PRIVATE).edit()
             .putString(UPDATE_DELAY_SETTINGS, time.toString())
             .apply()
+
+        startUpdateService(time)
+    }
+
+    fun updateAllWeathers() {
+        getCitiesWeather {
+            updateCitiesWeathers(it, null)
+        }
     }
 
     interface OnGetUpdatedTaskListener {
