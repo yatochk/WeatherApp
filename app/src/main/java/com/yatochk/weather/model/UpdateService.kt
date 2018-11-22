@@ -2,15 +2,17 @@ package com.yatochk.weather.model
 
 import android.app.Service
 import android.content.Intent
+import android.os.Handler
 import android.os.IBinder
 import com.yatochk.weather.dagger.App
 import java.util.*
 
-const val NO_TIME = -1
-const val MS_PER_MINUTE = 3600L
+const val NO_TIME = 0
+const val MS_PER_MINUTE = 216000L
 
 class UpdateService : Service() {
     private val timer = Timer()
+    private val handler = Handler()
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val time = intent?.getIntExtra("time", NO_TIME) ?: NO_TIME
@@ -18,7 +20,9 @@ class UpdateService : Service() {
             timer.scheduleAtFixedRate(
                 object : TimerTask() {
                     override fun run() {
-                        App.component.getModel().updateAllWeathers()
+                        handler.post {
+                            App.component.getModel().updateAllWeathers()
+                        }
                     }
                 },
                 0, time * MS_PER_MINUTE

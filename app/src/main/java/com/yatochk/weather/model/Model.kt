@@ -98,7 +98,7 @@ class Model(val context: Context) : ModelContract {
         val time = context.getSharedPreferences(SETTINGS_PREFERENCES, Context.MODE_PRIVATE)
             .getString(UPDATE_DELAY_SETTINGS, NO_TIME.toString())
         serviceIntent.putExtra("time", time)
-        context.startActivity(serviceIntent)
+        context.startService(serviceIntent)
     }
 
     private fun startUpdateService(updateTime: Int) {

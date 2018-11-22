@@ -9,4 +9,5 @@ interface CitiesView : View {
     fun openWeatherActivity()
     fun stopUpdateAnim()
     fun showMessage(msg: String)
+    fun openSettings()
 }

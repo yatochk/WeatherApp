@@ -10,12 +10,15 @@ import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import com.yatochk.weather.R
 import com.yatochk.weather.dagger.App
 import com.yatochk.weather.model.database.CityWeather
 import com.yatochk.weather.presenter.MainPresenter
 import com.yatochk.weather.view.detailedweather.DetailedWeatherActivity
+import com.yatochk.weather.view.settings.SettingsActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
 class CitiesWeatherActivity : AppCompatActivity(), CitiesView {
@@ -24,9 +27,31 @@ class CitiesWeatherActivity : AppCompatActivity(), CitiesView {
     private lateinit var recyclerAdapter: CitiesRecyclerViewAdapter
     private val cities = ArrayList<CityWeather>()
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.tool_bar_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        if (item != null) {
+            when (item.itemId) {
+                R.id.settings_item -> presenter.settingsClick()
+            }
+        }
+
+        return true
+    }
+
+    override fun openSettings() {
+        val intent = Intent(this, SettingsActivity::class.java)
+        startActivity(intent)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        setSupportActionBar(tool_bar)
+
         presenter = App.component.getMainPresenter()
 
         recyclerAdapter = CitiesRecyclerViewAdapter(cities)

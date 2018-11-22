@@ -30,15 +30,16 @@ class MainPresenter(val model: ModelContract) {
         citiesView = null
     }
 
-    fun clickAddCity() {
-        citiesView?.openLocationDialog()
-    }
+    fun settingsClick() =
+        citiesView?.openSettings()
 
-    fun closeDialog() {
+    fun clickAddCity() =
+        citiesView?.openLocationDialog()
+
+    fun closeDialog() =
         model.getCitiesWeather {
             citiesView?.updateCitiesRecycler(it)
         }
-    }
 
     fun updateWeatherSwipe(cities: ArrayList<CityWeather>) {
         model.updateCitiesWeathers(cities, object : Model.OnGetUpdatedTaskListener {
@@ -60,11 +61,9 @@ class MainPresenter(val model: ModelContract) {
         })
     }
 
-    fun swipeDeleteCity(deleteCityId: String) {
+    fun swipeDeleteCity(deleteCityId: String) =
         model.deleteCitiesWeather(deleteCityId) {}
-    }
 
-    fun clickCity() {
+    fun clickCity() =
         citiesView?.openWeatherActivity()
-    }
 }
