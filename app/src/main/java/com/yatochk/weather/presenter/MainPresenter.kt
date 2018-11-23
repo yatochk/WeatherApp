@@ -9,6 +9,7 @@ import com.yatochk.weather.view.cities.CitiesView
 
 class MainPresenter(val model: ModelContract) {
     private var citiesView: CitiesView? = null
+    private var isOpenDialog = false
 
     private val connectionErrorMsg = "Please check internet connection"
     private val unknownErrorMsg = "Unknown error"

@@ -11,6 +11,7 @@ import com.yatochk.weather.model.onlineweather.OnlineWeather
 
 const val SETTINGS_PREFERENCES = "setPref"
 const val UPDATE_DELAY_SETTINGS = "upDelPref"
+const val DEFAULT_DELAY = 24
 
 class Model(val context: Context) : ModelContract {
     companion object {
@@ -93,10 +94,14 @@ class Model(val context: Context) : ModelContract {
         locationTask.setLocationListener(listener)
     }
 
+    override fun getDelayTime(): Int =
+        context.getSharedPreferences(SETTINGS_PREFERENCES, Context.MODE_PRIVATE).getString(
+            UPDATE_DELAY_SETTINGS, DEFAULT_DELAY.toString()
+        ).toInt()
+
     override fun startUpdateService() {
         val serviceIntent = Intent(context, UpdateService::class.java)
-        val time = context.getSharedPreferences(SETTINGS_PREFERENCES, Context.MODE_PRIVATE)
-            .getString(UPDATE_DELAY_SETTINGS, NO_TIME.toString())
+        val time = getDelayTime()
         serviceIntent.putExtra("time", time)
         context.startService(serviceIntent)
     }

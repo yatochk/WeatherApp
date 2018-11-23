@@ -3,6 +3,7 @@ package com.yatochk.weather.view.settings
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.SeekBar
+import android.widget.Toast
 import com.yatochk.weather.R
 import com.yatochk.weather.dagger.App
 import com.yatochk.weather.presenter.SettingsPresenter
@@ -32,6 +33,10 @@ class SettingsActivity : AppCompatActivity(), SettingsView {
 
     }
 
+    override fun setDelaySeekbar(time: Int) {
+        time_seek_bar.progress = time
+    }
+
     override fun onResume() {
         super.onResume()
         presenter.attachView(this)
@@ -40,6 +45,10 @@ class SettingsActivity : AppCompatActivity(), SettingsView {
     override fun onPause() {
         super.onPause()
         presenter.detachView()
+    }
+
+    override fun showMessage(msg: String) {
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
     }
 
     override fun getTimeProgress(): Int {

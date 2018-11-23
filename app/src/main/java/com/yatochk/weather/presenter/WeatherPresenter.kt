@@ -1,6 +1,6 @@
 package com.yatochk.weather.presenter
 
-import com.yatochk.weather.model.Model
+import com.yatochk.weather.model.ModelContract
 
-class WeatherPresenter(model: Model) {
+class WeatherPresenter(model: ModelContract) {
 }

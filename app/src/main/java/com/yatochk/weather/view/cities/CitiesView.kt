@@ -8,6 +8,5 @@ interface CitiesView : View {
     fun openLocationDialog()
     fun openWeatherActivity()
     fun stopUpdateAnim()
-    fun showMessage(msg: String)
     fun openSettings()
 }

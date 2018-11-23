@@ -11,4 +11,5 @@ interface ModelContract {
     fun getCity(activity: Activity, listener: (String) -> Unit)
     fun setUpdateDelay(time: Int)
     fun startUpdateService()
+    fun getDelayTime(): Int
 }

@@ -1,13 +1,14 @@
 package com.yatochk.weather.presenter
 
-import com.yatochk.weather.model.Model
+import com.yatochk.weather.model.ModelContract
 import com.yatochk.weather.view.settings.SettingsView
 
-class SettingsPresenter(val model: Model) {
+class SettingsPresenter(val model: ModelContract) {
     private var view: SettingsView? = null
 
     fun attachView(view: SettingsView) {
         this.view = view
+        view.setDelaySeekbar(model.getDelayTime())
     }
 
     fun detachView() {
