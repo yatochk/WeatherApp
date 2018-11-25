@@ -25,43 +25,40 @@ class LocationTask(activity: Activity) {
         criteria.isCostAllowed = true
         val provider = locationManager.getBestProvider(criteria, true)
         val locationListener = object : LocationListener {
-            override fun onLocationChanged(location: Location?) {
-                if (location != null) {
-                    val address = Geocoder(activity)
-                        .getFromLocation(location.latitude, location.longitude, 1)[0]
-                    listener?.invoke(address.locality)
-                    locationManager.removeUpdates(this)
-                }
+            override fun onLocationChanged(location: Location) {
+                val address = Geocoder(activity)
+                    .getFromLocation(location.latitude, location.longitude, 1)[0]
+                listener?.invoke(address.locality)
+                locationManager.removeUpdates(this)
             }
 
             override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-
             }
 
             override fun onProviderEnabled(provider: String?) {
-
             }
 
             override fun onProviderDisabled(provider: String?) {
-
             }
         }
 
         if (ActivityCompat.checkSelfPermission(
                 activity,
                 Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-            && ActivityCompat.checkSelfPermission(
+            ) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(
                 activity,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
-        ) run {
-            ActivityCompat.requestPermissions(
-                activity, arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ), 1
-            )
-        } else {
+        )
+        // Why run??
+            run {
+                ActivityCompat.requestPermissions(
+                    activity, arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ), 1
+                )
+            } else {
             locationManager.requestLocationUpdates(
                 provider,
                 500,

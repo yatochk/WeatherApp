@@ -25,16 +25,15 @@ class GetCitiesWeatherTask(private val contentResolver: ContentResolver) {
                 CityWeatherEntry.TEMPERATURE,
                 CityWeatherEntry.FILE_NAME
             )
-            val cursor: Cursor?
-            cursor = contentResolver.query(
+
+            //WARNING!
+            contentResolver.query(
                 CityWeatherEntry.CONTENT_URI,
                 projection,
                 null,
                 null,
                 null
-            )
-
-            with(cursor) {
+            ).apply {
                 while (moveToNext()) {
                     val rowId = getString(getColumnIndexOrThrow(CityWeatherEntry.ID))
                     val cityName = getString(getColumnIndexOrThrow(CityWeatherEntry.CITY))
@@ -133,14 +132,12 @@ class DeleteCityWeatherTask(private val contentResolver: ContentResolver, privat
         onDeleteCityWeatherListener = listener
     }
 
-    override fun doInBackground(vararg params: Unit?): Int {
+    override fun doInBackground(vararg params: Unit): Int {
         return contentResolver.delete(CityWeatherEntry.CONTENT_URI, CityWeatherEntry.ID, arrayOf(rowId))
     }
 
-    override fun onPostExecute(result: Int?) {
+    override fun onPostExecute(result: Int) {
         super.onPostExecute(result)
-
-        if (result != null)
-            onDeleteCityWeatherListener?.invoke(result.toString())
+        onDeleteCityWeatherListener?.invoke(result.toString())
     }
 }

@@ -14,6 +14,8 @@ class SplashActivity : AppCompatActivity() {
         val handler = Handler()
         val intent = Intent(this, CitiesWeatherActivity::class.java)
 
+
+        //Полный бред
         handler.postDelayed(
             {
                 startActivity(intent)

@@ -15,7 +15,7 @@ class SettingsActivity : AppCompatActivity(), SettingsView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
-        presenter = App.component.getSettingsPresenter()
+        presenter = App.component.settingsPresenter
 
         time_seek_bar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -33,7 +33,7 @@ class SettingsActivity : AppCompatActivity(), SettingsView {
 
     }
 
-    override fun setDelaySeekbar(time: Int) {
+    override fun setDelaySeekBar(time: Int) {
         time_seek_bar.progress = time
     }
 
@@ -51,7 +51,5 @@ class SettingsActivity : AppCompatActivity(), SettingsView {
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
     }
 
-    override fun getTimeProgress(): Int {
-        return time_seek_bar.progress
-    }
+    override val timeProgress: Int get() = time_seek_bar.progress
 }

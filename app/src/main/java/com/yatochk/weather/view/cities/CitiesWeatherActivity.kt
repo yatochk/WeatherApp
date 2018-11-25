@@ -32,11 +32,9 @@ class CitiesWeatherActivity : AppCompatActivity(), CitiesView {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        if (item != null) {
-            when (item.itemId) {
-                R.id.settings_item -> presenter.settingsClick()
-            }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.settings_item -> presenter.settingsClick()
         }
 
         return true
@@ -52,18 +50,18 @@ class CitiesWeatherActivity : AppCompatActivity(), CitiesView {
         setContentView(R.layout.activity_main)
         setSupportActionBar(tool_bar)
 
-        presenter = App.component.getMainPresenter()
+        presenter = App.component.mainPresenter
 
         recyclerAdapter = CitiesRecyclerViewAdapter(cities)
         recyclerAdapter.setOnItemClickListener {
             presenter.clickCity()
         }
-        val layoutManager = LinearLayoutManager(this)
+
         with(cities_recycler) {
             itemAnimator = DefaultItemAnimator()
             addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
             adapter = recyclerAdapter
-            this.layoutManager = layoutManager
+            layoutManager = LinearLayoutManager(this@CitiesWeatherActivity)
         }
 
         val itemTouchHelperCallback = RecyclerItemTouchHelper(
@@ -136,9 +134,15 @@ class CitiesWeatherActivity : AppCompatActivity(), CitiesView {
 
     override fun updateCitiesRecycler(cities: ArrayList<CityWeather>) {
         this.cities.clear()
-        for (city in cities)
-            this.cities.add(city)
+        this.cities.addAll(cities)
 
+
+
+        /*
+        Если я не ошибаюсь этот метод вообще бесполезен. Т.к в исходниках он вообще ничего не делает:
+        public void onChanged() {
+            // Do nothing
+        }*/
         recyclerAdapter.notifyDataSetChanged()
     }
 

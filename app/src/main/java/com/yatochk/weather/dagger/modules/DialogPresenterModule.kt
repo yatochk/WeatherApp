@@ -9,5 +9,5 @@ import dagger.Provides
 class DialogPresenterModule {
     @Provides
     fun provideDialogPresenter(): DialogPresenter =
-        DialogPresenter(App.component.getModel())
+        DialogPresenter(App.component.model)
 }

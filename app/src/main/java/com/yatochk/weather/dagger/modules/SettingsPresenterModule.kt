@@ -9,5 +9,5 @@ import dagger.Provides
 class SettingsPresenterModule {
     @Provides
     fun provideMainPresenter(): SettingsPresenter =
-        SettingsPresenter(App.component.getModel())
+        SettingsPresenter(App.component.model)
 }
