@@ -8,5 +8,5 @@ import dagger.Provides
 @Module
 class ModelModule {
     @Provides
-    fun provideModel(): Model = Model(App.component.getContext())
+    fun provideModel(): Model = Model(App.component.context)
 }

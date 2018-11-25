@@ -43,7 +43,7 @@ class Model(val context: Context) : ModelContract {
                     }
 
                     val updateTask = UpdateCityWeatherTask(contentResolver!!, city.id, values)
-                    if (city == cities[cities.size - 1])
+                    if (city == cities.last())
                         updateTask.setOnUpdateCityWeatherListener {
                             getCitiesWeather { cities ->
                                 listener?.onComplete(cities)
@@ -70,9 +70,7 @@ class Model(val context: Context) : ModelContract {
                 }
 
                 val addTask = AddCityWeatherTask(contentResolver!!, values)
-                addTask.setOnAddCityWeatherListener {
-                    listener.onComplete(it)
-                }
+                addTask.setOnAddCityWeatherListener(listener::onComplete)
                 addTask.start()
             }
 
@@ -94,14 +92,14 @@ class Model(val context: Context) : ModelContract {
         locationTask.setLocationListener(listener)
     }
 
-    override fun getDelayTime(): Int =
-        context.getSharedPreferences(SETTINGS_PREFERENCES, Context.MODE_PRIVATE).getString(
+    override val delayTime: Int
+        get() = context.getSharedPreferences(SETTINGS_PREFERENCES, Context.MODE_PRIVATE).getString(
             UPDATE_DELAY_SETTINGS, DEFAULT_DELAY.toString()
         ).toInt()
 
     override fun startUpdateService() {
         val serviceIntent = Intent(context, UpdateService::class.java)
-        val time = getDelayTime()
+        val time = delayTime
         serviceIntent.putExtra("time", time)
         context.startService(serviceIntent)
     }

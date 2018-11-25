@@ -22,7 +22,7 @@ class DetailedWeatherActivity : AppCompatActivity(), DetailedWeatherView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detailed_weather)
-        presenter = App.component.getWeatherPresenter()
+        presenter = App.component.weatherPresenter
     }
 
     override fun onResume() {

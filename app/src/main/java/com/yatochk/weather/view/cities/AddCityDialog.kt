@@ -21,18 +21,18 @@ class AddCityDialog : DialogFragment(), AddCityView {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val builder = AlertDialog.Builder(activity)
         dialogView = activity!!.layoutInflater.inflate(R.layout.add_city, null)
-        presenter = App.component.getDialogPresenter()
+        presenter = App.component.dialogPresenter
         presenter.attachDialog(this, onAddCityListener)
 
-        builder.setPositiveButton("Set") { _, _ ->
-            if (cityName != null)
-                presenter.setClick(cityName!!)
-        }
-        builder.setNegativeButton("Cancel", null)
-        builder.setView(dialogView)
-        return builder.create()
+        return AlertDialog.Builder(activity)
+            .setPositiveButton("Set") { _, _ ->
+                if (cityName != null)
+                    presenter.setClick(cityName!!)
+            }
+            .setNegativeButton("Cancel", null)
+            .setView(dialogView)
+            .create()
     }
 
     override fun setCity(cityName: String) {

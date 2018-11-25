@@ -8,12 +8,12 @@ class SettingsPresenter(val model: ModelContract) {
 
     fun attachView(view: SettingsView) {
         this.view = view
-        view.setDelaySeekbar(model.getDelayTime())
+        view.setDelaySeekBar(model.delayTime)
     }
 
     fun detachView() {
         if (view != null)
-            model.setUpdateDelay(view!!.getTimeProgress())
+            model.setUpdateDelay(view!!.timeProgress)
         view = null
     }
 }

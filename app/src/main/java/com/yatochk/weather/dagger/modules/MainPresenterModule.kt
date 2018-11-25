@@ -10,5 +10,5 @@ import javax.inject.Singleton
 class MainPresenterModule {
     @Provides
     @Singleton
-    fun provideMainPresenter(): MainPresenter = MainPresenter(App.component.getModel())
+    fun provideMainPresenter(): MainPresenter = MainPresenter(App.component.model)
 }

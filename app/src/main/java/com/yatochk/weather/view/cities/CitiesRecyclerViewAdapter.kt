@@ -13,7 +13,7 @@ class CitiesRecyclerViewAdapter(private val cities: ArrayList<CityWeather>) :
     RecyclerView.Adapter<CitiesRecyclerViewAdapter.CityViewHolder>() {
     private var onItemClickListener: ((CityWeather) -> Unit)? = null
 
-    fun setOnItemClickListener(onClick: ((translates: CityWeather) -> Unit)) {
+    fun setOnItemClickListener(onClick: (translates: CityWeather) -> Unit) {
         onItemClickListener = onClick
     }
 

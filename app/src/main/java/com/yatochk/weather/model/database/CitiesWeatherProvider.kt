@@ -24,18 +24,16 @@ class CitiesWeatherProvider : ContentProvider() {
     private lateinit var dbHelper: WeatherDbHelper
 
     companion object {
-        private val uriMatcher = UriMatcher(UriMatcher.NO_MATCH)
-
-        init {
-            uriMatcher.addURI(CONTENT_AUTHORITY, PATH_CITIES_WEATHER, CITIES)
-            uriMatcher.addURI(CONTENT_AUTHORITY, "$PATH_CITIES_WEATHER/#", CITY_ID)
+        private val uriMatcher = UriMatcher(UriMatcher.NO_MATCH).apply {
+            addURI(CONTENT_AUTHORITY, PATH_CITIES_WEATHER, CITIES)
+            addURI(CONTENT_AUTHORITY, "$PATH_CITIES_WEATHER/#", CITY_ID)
         }
     }
 
-    override fun insert(uri: Uri?, values: ContentValues?): Uri {
+    override fun insert(uri: Uri, values: ContentValues): Uri {
         val match = uriMatcher.match(uri)
         when (match) {
-            CITIES -> return insertCityWeather(uri!!, values!!)!!
+            CITIES -> return insertCityWeather(uri, values)!!
             else -> throw IllegalArgumentException("Insertion is not supported for $uri")
         }
     }
@@ -86,14 +84,14 @@ class CitiesWeatherProvider : ContentProvider() {
         return true
     }
 
-    override fun update(uri: Uri?, values: ContentValues?, selection: String?, selectionArgs: Array<out String>?): Int {
+    override fun update(uri: Uri, values: ContentValues, selection: String, selectionArgs: Array<out String>): Int {
         val match = uriMatcher.match(uri)
         return when (match) {
-            CITIES -> updateCityWeather(values!!, selection!!, selectionArgs!!)
+            CITIES -> updateCityWeather(values, selection, selectionArgs)
             CITY_ID -> {
                 val updateSelection = CityWeatherEntry.ID + "=?"
                 val updateSelectionArgs = arrayOf(ContentUris.parseId(uri).toString())
-                updateCityWeather(values!!, updateSelection, updateSelectionArgs)
+                updateCityWeather(values, updateSelection, updateSelectionArgs)
             }
             else -> throw IllegalArgumentException("Update is not supported for $uri")
         }

@@ -8,7 +8,7 @@ import com.yatochk.weather.dagger.App
 import java.util.*
 
 const val NO_TIME = 0
-const val MS_PER_MINUTE = 216000L
+const val MS_PER_MINUTE = 60 * 60 * 60L
 
 class UpdateService : Service() {
     private val timer = Timer()
@@ -21,7 +21,7 @@ class UpdateService : Service() {
                 object : TimerTask() {
                     override fun run() {
                         handler.post {
-                            App.component.getModel().updateAllWeathers()
+                            App.component.model.updateAllWeathers()
                         }
                     }
                 },

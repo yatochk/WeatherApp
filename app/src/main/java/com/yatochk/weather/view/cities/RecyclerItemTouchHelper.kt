@@ -14,12 +14,9 @@ class RecyclerItemTouchHelper(dragDirs: Int, swipeDirs: Int, private val listene
     ): Boolean =
         true
 
-    override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
-        if (viewHolder != null) {
+    override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder, actionState: Int) {
             val foregroundView = (viewHolder as CitiesRecyclerViewAdapter.CityViewHolder).viewForeground
-
             ItemTouchHelper.Callback.getDefaultUIUtil().onSelected(foregroundView)
-        }
     }
 
     override fun onChildDrawOver(

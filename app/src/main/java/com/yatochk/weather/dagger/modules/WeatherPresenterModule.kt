@@ -9,5 +9,5 @@ import dagger.Provides
 class WeatherPresenterModule {
     @Provides
     fun provideWeatherPresenter(): WeatherPresenter =
-        WeatherPresenter(App.component.getModel())
+        WeatherPresenter(App.component.model)
 }

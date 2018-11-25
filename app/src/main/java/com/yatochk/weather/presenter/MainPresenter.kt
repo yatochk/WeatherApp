@@ -8,17 +8,21 @@ import com.yatochk.weather.model.onlineweather.JSON_ERROR
 import com.yatochk.weather.view.cities.CitiesView
 
 class MainPresenter(val model: ModelContract) {
+    companion object {
+        //Rename
+        private const val connectionErrorMsg = "Please check internet connection"
+        private const val unknownErrorMsg = "Unknown error"
+        private const val onlineServiceErrorMsg = "Weather service error"
+    }
+
     private var citiesView: CitiesView? = null
     private var isOpenDialog = false
 
-    private val connectionErrorMsg = "Please check internet connection"
-    private val unknownErrorMsg = "Unknown error"
-    private val onlineServiceErrorMsg = "Weather service error"
 
     fun attachView(view: CitiesView) {
         citiesView = view
         model.getCitiesWeather {
-            if (it.size > 0)
+            if (it.isNotEmpty())
                 citiesView?.updateCitiesRecycler(it)
             else
                 citiesView?.openLocationDialog()
