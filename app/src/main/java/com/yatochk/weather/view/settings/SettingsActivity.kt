@@ -15,7 +15,7 @@ class SettingsActivity : AppCompatActivity(), SettingsView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
-        presenter = App.component.getSettingsPresenter()
+        presenter = App.component.settingsPresenter
 
         time_seek_bar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {

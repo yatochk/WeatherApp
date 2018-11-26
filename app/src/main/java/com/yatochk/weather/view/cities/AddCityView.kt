@@ -1,5 +1,7 @@
 package com.yatochk.weather.view.cities
 
-interface AddCityView {
+import com.yatochk.weather.view.View
+
+interface AddCityView : View {
     fun setCity(cityName: String)
 }

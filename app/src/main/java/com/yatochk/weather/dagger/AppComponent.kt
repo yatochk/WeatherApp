@@ -16,10 +16,10 @@ import javax.inject.Singleton
         DialogPresenterModule::class, ModelModule::class, AppModule::class]
 )
 interface AppComponent {
-    fun getMainPresenter(): MainPresenter
-    fun getWeatherPresenter(): WeatherPresenter
-    fun getSettingsPresenter(): SettingsPresenter
-    fun getDialogPresenter(): DialogPresenter
-    fun getModel(): Model
-    fun getContext(): Context
+    val mainPresenter: MainPresenter
+    val weatherPresenter: WeatherPresenter
+    val settingsPresenter: SettingsPresenter
+    val dialogPresenter: DialogPresenter
+    val model: Model
+    val context: Context
 }

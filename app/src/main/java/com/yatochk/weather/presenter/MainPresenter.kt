@@ -9,7 +9,6 @@ import com.yatochk.weather.view.cities.CitiesView
 
 class MainPresenter(val model: ModelContract) {
     private var citiesView: CitiesView? = null
-    private var isOpenDialog = false
 
     private val connectionErrorMsg = "Please check internet connection"
     private val unknownErrorMsg = "Unknown error"
@@ -42,6 +41,18 @@ class MainPresenter(val model: ModelContract) {
             citiesView?.updateCitiesRecycler(it)
         }
 
+    fun closeDialogWithError(errorCode: Int) = showError(errorCode)
+
+    private fun showError(errorCode: Int) {
+        citiesView?.showMessage(
+            when (errorCode) {
+                CONNECTION_ERROR -> connectionErrorMsg
+                JSON_ERROR -> onlineServiceErrorMsg
+                else -> unknownErrorMsg
+            }
+        )
+    }
+
     fun updateWeatherSwipe(cities: ArrayList<CityWeather>) {
         model.updateCitiesWeathers(cities, object : Model.OnGetUpdatedTaskListener {
             override fun onComplete(cities: ArrayList<CityWeather>) {
@@ -50,13 +61,7 @@ class MainPresenter(val model: ModelContract) {
             }
 
             override fun onError(code: Int) {
-                citiesView?.showMessage(
-                    when (code) {
-                        CONNECTION_ERROR -> connectionErrorMsg
-                        JSON_ERROR -> onlineServiceErrorMsg
-                        else -> unknownErrorMsg
-                    }
-                )
+                showError(code)
                 citiesView?.stopUpdateAnim()
             }
         })

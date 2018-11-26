@@ -1,13 +1,18 @@
 package com.yatochk.weather.model
 
 import android.app.Activity
-import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import com.yatochk.weather.model.database.*
 import com.yatochk.weather.model.location.LocationTask
+import com.yatochk.weather.model.onlineweather.CONNECTION_ERROR
+import com.yatochk.weather.model.onlineweather.CurrentWeatherModel
+import com.yatochk.weather.model.onlineweather.JSON_ERROR
 import com.yatochk.weather.model.onlineweather.OnlineWeather
+import retrofit2.Call
+import retrofit2.Response
 
 const val SETTINGS_PREFERENCES = "setPref"
 const val UPDATE_DELAY_SETTINGS = "upDelPref"
@@ -15,75 +20,87 @@ const val DEFAULT_DELAY = 24
 
 class Model(val context: Context) : ModelContract {
     companion object {
-        private var contentResolver: ContentResolver? = null
+        private const val API_KEY = "825e609fb616ab086a97989cb0dc581b"
     }
 
-    init {
-        contentResolver = context.contentResolver
-    }
+    private val contentResolver = context.contentResolver
 
     override fun getCitiesWeather(listener: ((ArrayList<CityWeather>) -> Unit)?) {
-        val getTask = GetCitiesWeatherTask(contentResolver!!)
+        val getTask = GetCitiesWeatherTask(contentResolver)
         getTask.setOnGetCitiesWeatherListener(listener)
         getTask.start()
     }
 
     override fun updateCitiesWeathers(cities: ArrayList<CityWeather>, listener: OnGetUpdatedTaskListener?) {
         for (city in cities) {
-            OnlineWeather.getCityWeather(city.city, object : OnlineWeather.OnWeatherTaskListener {
-                override fun onComplete(temp: Int, json: String) {
-                    context.openFileOutput(city.city, Context.MODE_PRIVATE).use { fileOutputStream ->
-                        fileOutputStream.write(json.toByteArray())
+            OnlineWeather.weatherApi.getCurrentWeather(city.city, API_KEY)
+                .enqueue(object : retrofit2.Callback<CurrentWeatherModel> {
+                    override fun onFailure(call: Call<CurrentWeatherModel>?, t: Throwable?) {
+                        listener?.onError(CONNECTION_ERROR)
                     }
 
-                    val values = ContentValues().apply {
-                        put(CityWeatherEntry.CITY, city.city)
-                        put(CityWeatherEntry.TEMPERATURE, temp)
-                        put(CityWeatherEntry.FILE_NAME, city.city)
-                    }
-
-                    val updateTask = UpdateCityWeatherTask(contentResolver!!, city.id, values)
-                    if (city == cities[cities.size - 1])
-                        updateTask.setOnUpdateCityWeatherListener {
-                            getCitiesWeather { cities ->
-                                listener?.onComplete(cities)
+                    override fun onResponse(
+                        call: Call<CurrentWeatherModel>?,
+                        response: Response<CurrentWeatherModel>?
+                    ) {
+                        if (response != null) {
+                            context.openFileOutput(city.city, Context.MODE_PRIVATE).use { fileOutputStream ->
+                                fileOutputStream.write(response.body().toString().toByteArray())
                             }
+
+                            val values = ContentValues().apply {
+                                put(CityWeatherEntry.CITY, city.city)
+                                put(CityWeatherEntry.TEMPERATURE, (response.body().main.temp - 273).toInt())
+                                put(CityWeatherEntry.FILE_NAME, city.city)
+                            }
+
+                            val updateTask = UpdateCityWeatherTask(contentResolver, city.id, values)
+                            if (city == cities[cities.size - 1])
+                                updateTask.setOnUpdateCityWeatherListener {
+                                    getCitiesWeather { cities ->
+                                        listener?.onComplete(cities)
+                                    }
+                                }
+                            updateTask.start()
                         }
-                    updateTask.start()
-                }
 
-                override fun onError(code: Int) {
-                    listener?.onError(code)
-                }
-
-            })
+                    }
+                })
         }
     }
 
     override fun addCityWeather(city: String, listener: OnAddTaskListener) {
-        OnlineWeather.getCityWeather(city, object : OnlineWeather.OnWeatherTaskListener {
-            override fun onComplete(temp: Int, json: String) {
-                val values = ContentValues().apply {
-                    put(CityWeatherEntry.CITY, city)
-                    put(CityWeatherEntry.TEMPERATURE, temp)
-                    put(CityWeatherEntry.FILE_NAME, json)
+        OnlineWeather.weatherApi.getCurrentWeather(city, API_KEY)
+            .enqueue(object : retrofit2.Callback<CurrentWeatherModel> {
+                override fun onFailure(call: Call<CurrentWeatherModel>?, t: Throwable?) {
+                    listener.onError(CONNECTION_ERROR)
                 }
 
-                val addTask = AddCityWeatherTask(contentResolver!!, values)
+                override fun onResponse(call: Call<CurrentWeatherModel>?, response: Response<CurrentWeatherModel>?) {
+                    if (response?.body() == null) {
+                        listener.onError(JSON_ERROR)
+                        return
+                    }
+
+                    Log.d("testedTags", response.body().toString())
+                val values = ContentValues().apply {
+                    put(CityWeatherEntry.CITY, city)
+                    put(CityWeatherEntry.TEMPERATURE, (response.body().main.temp - 273).toInt())
+                    put(CityWeatherEntry.FILE_NAME, "")
+                }
+
+                    val addTask = AddCityWeatherTask(contentResolver, values)
                 addTask.setOnAddCityWeatherListener {
                     listener.onComplete(it)
                 }
                 addTask.start()
-            }
 
-            override fun onError(code: Int) {
-                listener.onError(code)
             }
         })
     }
 
     override fun deleteCitiesWeather(rowId: String, listener: ((String) -> Unit)?) {
-        val deleteTask = DeleteCityWeatherTask(contentResolver!!, rowId)
+        val deleteTask = DeleteCityWeatherTask(contentResolver, rowId)
         if (listener != null)
             deleteTask.setOnDeleteCityWeatherListener(listener)
         deleteTask.execute()
@@ -95,9 +112,9 @@ class Model(val context: Context) : ModelContract {
     }
 
     override fun getDelayTime(): Int =
-        context.getSharedPreferences(SETTINGS_PREFERENCES, Context.MODE_PRIVATE).getString(
-            UPDATE_DELAY_SETTINGS, DEFAULT_DELAY.toString()
-        ).toInt()
+        context.getSharedPreferences(SETTINGS_PREFERENCES, Context.MODE_PRIVATE).getInt(
+            UPDATE_DELAY_SETTINGS, DEFAULT_DELAY
+        )
 
     override fun startUpdateService() {
         val serviceIntent = Intent(context, UpdateService::class.java)
@@ -116,7 +133,7 @@ class Model(val context: Context) : ModelContract {
 
     override fun setUpdateDelay(time: Int) {
         context.getSharedPreferences(SETTINGS_PREFERENCES, Context.MODE_PRIVATE).edit()
-            .putString(UPDATE_DELAY_SETTINGS, time.toString())
+            .putInt(UPDATE_DELAY_SETTINGS, time)
             .apply()
 
         startUpdateService(time)

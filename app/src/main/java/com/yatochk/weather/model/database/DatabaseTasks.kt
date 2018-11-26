@@ -72,7 +72,7 @@ class AddCityWeatherTask(contentResolver: ContentResolver, val values: ContentVa
     private val thread: Thread
 
     init {
-        val rowId = contentResolver.insert(CityWeatherEntry.CONTENT_URI, values)
+        val rowId = contentResolver.insert(CityWeatherEntry.CONTENT_URI, values)!!
         val handler = Handler()
         thread = Thread {
             val weather = CityWeather(

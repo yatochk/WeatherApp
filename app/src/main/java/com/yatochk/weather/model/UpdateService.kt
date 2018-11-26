@@ -21,7 +21,7 @@ class UpdateService : Service() {
                 object : TimerTask() {
                     override fun run() {
                         handler.post {
-                            App.component.getModel().updateAllWeathers()
+                            App.component.model.updateAllWeathers()
                         }
                     }
                 },

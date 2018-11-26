@@ -82,7 +82,7 @@ class CitiesWeatherProvider : ContentProvider() {
     }
 
     override fun onCreate(): Boolean {
-        dbHelper = WeatherDbHelper(context)
+        dbHelper = WeatherDbHelper(context!!)
         return true
     }
 

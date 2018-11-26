@@ -16,6 +16,7 @@ import android.widget.Toast
 import com.yatochk.weather.R
 import com.yatochk.weather.dagger.App
 import com.yatochk.weather.model.database.CityWeather
+import com.yatochk.weather.presenter.DialogPresenter
 import com.yatochk.weather.presenter.MainPresenter
 import com.yatochk.weather.view.detailedweather.DetailedWeatherActivity
 import com.yatochk.weather.view.settings.SettingsActivity
@@ -52,7 +53,7 @@ class CitiesWeatherActivity : AppCompatActivity(), CitiesView {
         setContentView(R.layout.activity_main)
         setSupportActionBar(tool_bar)
 
-        presenter = App.component.getMainPresenter()
+        presenter = App.component.mainPresenter
 
         recyclerAdapter = CitiesRecyclerViewAdapter(cities)
         recyclerAdapter.setOnItemClickListener {
@@ -119,9 +120,16 @@ class CitiesWeatherActivity : AppCompatActivity(), CitiesView {
     override fun openLocationDialog() {
         val dialog = AddCityDialog()
         dialog.show(supportFragmentManager, "AddCity")
-        dialog.setOnCancelListener {
-            presenter.closeDialog()
-        }
+        dialog.setOnCancelListener(object : DialogPresenter.OnAddCityListener {
+            override fun onComplete() {
+                presenter.closeDialog()
+            }
+
+            override fun onError(code: Int) {
+                presenter.closeDialogWithError(code)
+            }
+
+        })
     }
 
     override fun onResume() {
