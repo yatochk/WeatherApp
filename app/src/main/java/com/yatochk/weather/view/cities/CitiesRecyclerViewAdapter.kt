@@ -34,8 +34,7 @@ class CitiesRecyclerViewAdapter(private val cities: ArrayList<CityWeather>) :
         val city = CityWeather(
             cities[position].id,
             cities[position].city,
-            cities[position].temperature,
-            cities[position].weatherJsonName
+            cities[position].temperature
         )
 
         with(itemView) {

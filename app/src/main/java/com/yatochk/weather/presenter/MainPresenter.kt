@@ -16,7 +16,7 @@ class MainPresenter(val model: ModelContract) {
 
     fun attachView(view: CitiesView) {
         citiesView = view
-        model.getCitiesWeather {
+        model.getCurrentWeather {
             if (it.size > 0)
                 citiesView?.updateCitiesRecycler(it)
             else
@@ -37,7 +37,7 @@ class MainPresenter(val model: ModelContract) {
         citiesView?.openLocationDialog()
 
     fun closeDialog() =
-        model.getCitiesWeather {
+        model.getCurrentWeather {
             citiesView?.updateCitiesRecycler(it)
         }
 

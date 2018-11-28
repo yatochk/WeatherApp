@@ -13,7 +13,6 @@ object CityWeatherEntry {
     const val ID = BaseColumns._ID
     const val CITY = "city"
     const val TEMPERATURE = "temp"
-    const val FILE_NAME = "file"
 
     val CONTENT_URI: Uri = Uri.withAppendedPath(BASE_CONTENT_URI, PATH_CITIES_WEATHER)
     const val CONTENT_LIST_TYPE =
@@ -22,4 +21,4 @@ object CityWeatherEntry {
         ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_CITIES_WEATHER
 }
 
-data class CityWeather(val id: String, val city: String, val temperature: String, val weatherJsonName: String)
+data class CityWeather(val id: String, val city: String, val temperature: String)

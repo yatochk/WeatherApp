@@ -9,5 +9,5 @@ interface WeatherApi {
     fun getCurrentWeather(@Query("q") cityName: String, @Query("appid") token: String): Call<CurrentWeatherModel>
 
     @GET("forecast/daily")
-    fun getDailyWeather(@Query("q") cityName: String, @Query("appid") token: String): Call<ArrayList<DailyWeatherModel>>
+    fun getDailyWeather(@Query("q") cityName: String, @Query("appid") token: String): Call<DailyWeatherModel>
 }

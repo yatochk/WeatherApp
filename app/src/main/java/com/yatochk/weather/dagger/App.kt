@@ -1,9 +1,9 @@
 package com.yatochk.weather.dagger
 
-import android.app.Application
+import com.orm.SugarApp
 import com.yatochk.weather.dagger.modules.*
 
-class App : Application() {
+class App : SugarApp() {
     companion object {
         lateinit var component: AppComponent
             private set

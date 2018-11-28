@@ -4,13 +4,9 @@ import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import com.yatochk.weather.model.database.*
 import com.yatochk.weather.model.location.LocationTask
-import com.yatochk.weather.model.onlineweather.CONNECTION_ERROR
-import com.yatochk.weather.model.onlineweather.CurrentWeatherModel
-import com.yatochk.weather.model.onlineweather.JSON_ERROR
-import com.yatochk.weather.model.onlineweather.OnlineWeather
+import com.yatochk.weather.model.onlineweather.*
 import retrofit2.Call
 import retrofit2.Response
 
@@ -25,10 +21,14 @@ class Model(val context: Context) : ModelContract {
 
     private val contentResolver = context.contentResolver
 
-    override fun getCitiesWeather(listener: ((ArrayList<CityWeather>) -> Unit)?) {
+    override fun getCurrentWeather(listener: ((ArrayList<CityWeather>) -> Unit)?) {
         val getTask = GetCitiesWeatherTask(contentResolver)
         getTask.setOnGetCitiesWeatherListener(listener)
         getTask.start()
+    }
+
+    override fun getDailyWeather(city: String, listener: ((DailyWeatherModel) -> Unit)?) {
+        return
     }
 
     override fun updateCitiesWeathers(cities: ArrayList<CityWeather>, listener: OnGetUpdatedTaskListener?) {
@@ -41,9 +41,9 @@ class Model(val context: Context) : ModelContract {
 
                     override fun onResponse(
                         call: Call<CurrentWeatherModel>?,
-                        response: Response<CurrentWeatherModel>?
+                        response: Response<CurrentWeatherModel>
                     ) {
-                        if (response != null) {
+                        if (response.body() != null) {
                             context.openFileOutput(city.city, Context.MODE_PRIVATE).use { fileOutputStream ->
                                 fileOutputStream.write(response.body().toString().toByteArray())
                             }
@@ -51,19 +51,18 @@ class Model(val context: Context) : ModelContract {
                             val values = ContentValues().apply {
                                 put(CityWeatherEntry.CITY, city.city)
                                 put(CityWeatherEntry.TEMPERATURE, (response.body().main.temp - 273).toInt())
-                                put(CityWeatherEntry.FILE_NAME, city.city)
                             }
 
                             val updateTask = UpdateCityWeatherTask(contentResolver, city.id, values)
                             if (city == cities[cities.size - 1])
                                 updateTask.setOnUpdateCityWeatherListener {
-                                    getCitiesWeather { cities ->
+                                    getCurrentWeather { cities ->
                                         listener?.onComplete(cities)
                                     }
                                 }
+
                             updateTask.start()
                         }
-
                     }
                 })
         }
@@ -76,25 +75,38 @@ class Model(val context: Context) : ModelContract {
                     listener.onError(CONNECTION_ERROR)
                 }
 
-                override fun onResponse(call: Call<CurrentWeatherModel>?, response: Response<CurrentWeatherModel>?) {
-                    if (response?.body() == null) {
+                override fun onResponse(call: Call<CurrentWeatherModel>?, response: Response<CurrentWeatherModel>) {
+                    if (response.body() == null) {
                         listener.onError(JSON_ERROR)
                         return
                     }
 
-                    Log.d("testedTags", response.body().toString())
-                val values = ContentValues().apply {
-                    put(CityWeatherEntry.CITY, city)
-                    put(CityWeatherEntry.TEMPERATURE, (response.body().main.temp - 273).toInt())
-                    put(CityWeatherEntry.FILE_NAME, "")
-                }
+                    val values = ContentValues().apply {
+                        put(CityWeatherEntry.CITY, city)
+                        put(CityWeatherEntry.TEMPERATURE, (response.body().main.temp - 273).toInt())
+                    }
 
                     val addTask = AddCityWeatherTask(contentResolver, values)
-                addTask.setOnAddCityWeatherListener {
-                    listener.onComplete(it)
+                    addTask.setOnAddCityWeatherListener {
+                        listener.onComplete(it)
+                    }
+                    addTask.start()
                 }
-                addTask.start()
+            })
 
+        OnlineWeather.weatherApi.getDailyWeather(city, API_KEY).enqueue(object : retrofit2.Callback<DailyWeatherModel> {
+            override fun onFailure(call: Call<DailyWeatherModel>?, t: Throwable?) {
+                listener.onError(CONNECTION_ERROR)
+            }
+
+            override fun onResponse(call: Call<DailyWeatherModel>?, response: Response<DailyWeatherModel>) {
+                if (response.body() == null) {
+                    listener.onError(JSON_ERROR)
+                    return
+                }
+
+                val dailyWeather = response.body()
+                dailyWeather.save()
             }
         })
     }
@@ -140,7 +152,7 @@ class Model(val context: Context) : ModelContract {
     }
 
     fun updateAllWeathers() {
-        getCitiesWeather {
+        getCurrentWeather {
             updateCitiesWeathers(it, null)
         }
     }

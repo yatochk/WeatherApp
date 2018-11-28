@@ -3,7 +3,7 @@ package com.yatochk.weather.model.onlineweather
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-class CurrentWeatherModel(
+open class CurrentWeatherModel(
     @SerializedName("weather")
     @Expose
     val weather: List<Weather>,
